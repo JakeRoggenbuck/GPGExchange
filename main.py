@@ -2,11 +2,11 @@ import os
 from flask import Flask, flash, request, redirect, url_for
 from werkzeug.utils import secure_filename
 
-UPLOAD_FOLDER = 'files/'
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+UPLOAD_FOLDER = 'keys/'
+ALLOWED_EXTENSIONS = {'asc', 'pgp'}
 
-app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+GPG_EXCHANGE = Flask(__name__)
+GPG_EXCHANGE.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 
 def allowed_file(filename):
@@ -14,7 +14,7 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-@app.route('/', methods=['GET', 'POST'])
+@GPG_EXCHANGE.route('/', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
         # check if the post request has the file part
@@ -29,7 +29,7 @@ def upload_file():
             return redirect(request.url)
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            file.save(os.path.join(GPG_EXCHANGE.config['UPLOAD_FOLDER'], filename))
             return redirect(url_for('upload_file',
                                     filename=filename))
 
@@ -45,4 +45,4 @@ def upload_file():
 
 
 if __name__ == "__main__":
-    app.run()
+    GPG_EXCHANGE.run()
